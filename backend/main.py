@@ -11,6 +11,7 @@ from api.middleware import RateLimitMiddleware
 from api.routers.auth import auth_router
 from api.routers.healthcheck import healthcheck_router
 from api.routers.user import user_router
+from cache.redis_manager import redis_manager
 from config.settings import settings
 from db.database import engine
 from exceptions.base import AppError
@@ -18,8 +19,10 @@ from exceptions.base import AppError
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    await redis_manager.connect()
     yield
     await engine.dispose()
+    await redis_manager.disconnect()
 
 
 app = FastAPI(lifespan=lifespan)
