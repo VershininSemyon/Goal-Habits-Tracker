@@ -1,4 +1,5 @@
 
+from db.repositories.goal import GoalRepository
 from db.repositories.user import UserRepository
 
 
@@ -10,6 +11,7 @@ class UnitOfWork:
         self.session = self.session_factory()
 
         self.user_repository = UserRepository(self.session)
+        self.goal_repository = GoalRepository(self.session)
 
     async def __aexit__(self, exc_type, exc, tb):
         try:

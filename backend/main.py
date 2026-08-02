@@ -9,6 +9,7 @@ from prometheus_fastapi_instrumentator import Instrumentator
 
 from api.middleware import RateLimitMiddleware
 from api.routers.auth import auth_router
+from api.routers.goal import goal_router
 from api.routers.healthcheck import healthcheck_router
 from api.routers.user import user_router
 from cache.redis_manager import redis_manager
@@ -52,6 +53,7 @@ if settings.CORS_ORIGINS:
 app.include_router(healthcheck_router)
 app.include_router(user_router)
 app.include_router(auth_router)
+app.include_router(goal_router)
 
 
 Instrumentator().instrument(app).expose(app)

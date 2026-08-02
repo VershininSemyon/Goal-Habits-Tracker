@@ -3,7 +3,7 @@ import uuid
 from datetime import datetime
 
 from sqlalchemy import DateTime, String, Text, func
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db.database import Base
 
@@ -16,3 +16,5 @@ class UserORM(Base):
     email: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
     password: Mapped[str] = mapped_column(Text, nullable=False)
     registration_date: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    goals: Mapped[list["GoalORM"]] = relationship(back_populates="user")

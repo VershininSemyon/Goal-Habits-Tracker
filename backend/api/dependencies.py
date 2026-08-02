@@ -8,6 +8,7 @@ from db.database import async_session_factory
 from db.unitofwork import UnitOfWork
 from schemas.user import UserReadSchema
 from services.auth import AuthService
+from services.goal import GoalService
 from services.user import UserService
 
 
@@ -30,6 +31,11 @@ def get_auth_service(uow: UOWDep) -> AuthService:
     return AuthService(uow)
 
 AuthServiceDep = Annotated[AuthService, Depends(get_auth_service)]
+
+def get_goal_service(uow: UOWDep) -> GoalService:
+    return GoalService(uow)
+
+GoalServiceDep = Annotated[GoalService, Depends(get_goal_service)]
 
 
 async def get_current_user(

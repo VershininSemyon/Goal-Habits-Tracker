@@ -5,6 +5,7 @@ from alembic import context
 from config.settings import settings
 from db.database import Base
 from models.user import UserORM
+from models.goal import GoalORM
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
