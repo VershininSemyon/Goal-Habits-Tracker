@@ -1,5 +1,6 @@
 
 from db.repositories.goal import GoalRepository
+from db.repositories.habit import HabitRepository
 from db.repositories.user import UserRepository
 
 
@@ -12,6 +13,7 @@ class UnitOfWork:
 
         self.user_repository = UserRepository(self.session)
         self.goal_repository = GoalRepository(self.session)
+        self.habit_repository = HabitRepository(self.session)
 
     async def __aexit__(self, exc_type, exc, tb):
         try:

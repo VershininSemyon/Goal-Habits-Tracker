@@ -1,7 +1,7 @@
 
 from db.unitofwork import UnitOfWork
 from exceptions.goal import TitleAlreadyExistsError
-from schemas.goal import GoalCreateSchema, GoalReadSchema, GoalUpdateSchema
+from schemas.goal import GoalCreateSchema, GoalQueryParams, GoalReadSchema, GoalUpdateSchema
 from services.validators import validate_goal_ownership
 
 
@@ -26,9 +26,12 @@ class GoalService:
 
         return GoalReadSchema.model_validate(created_goal)
 
-    async def get_user_goals(self, user_id: str) -> list[GoalReadSchema]:
+    async def get_user_goals(self, user_id: str, filters: GoalQueryParams) -> list[GoalReadSchema]:
         async with self.uow:
-            goals = await self.uow.goal_repository.get_user_goals(user_id)
+            goals = await self.uow.goal_repository.get_user_goals(
+                user_id=user_id,
+                **filters.model_dump()
+            )
             return [GoalReadSchema.model_validate(goal) for goal in goals]
 
     async def get_goal_by_id(self, user_id: str, goal_id: str) -> GoalReadSchema:

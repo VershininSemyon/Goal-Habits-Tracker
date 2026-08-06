@@ -1,10 +1,11 @@
 
 import uuid
+from typing import Annotated
 
-from fastapi import APIRouter, status
+from fastapi import APIRouter, Depends, status
 
 from api.dependencies import CurrentUserDep, GoalServiceDep
-from schemas.goal import GoalCreateSchema, GoalReadSchema, GoalUpdateSchema
+from schemas.goal import GoalCreateSchema, GoalQueryParams, GoalReadSchema, GoalUpdateSchema
 
 goal_router = APIRouter(prefix="/goals", tags=["Goals"])
 
@@ -28,9 +29,10 @@ async def create_goal(
 )
 async def get_goals(
     user: CurrentUserDep,
+    filters: Annotated[GoalQueryParams, Depends()],
     goal_service: GoalServiceDep
 ) -> GoalReadSchema:
-    return await goal_service.get_user_goals(user.id)
+    return await goal_service.get_user_goals(user.id, filters)
 
 
 @goal_router.get(

@@ -6,6 +6,7 @@ from config.settings import settings
 from db.database import Base
 from models.user import UserORM
 from models.goal import GoalORM
+from models.habit import HabitORM
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config

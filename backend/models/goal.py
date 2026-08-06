@@ -1,5 +1,4 @@
 
-import enum
 import uuid
 from datetime import datetime
 
@@ -7,12 +6,7 @@ from sqlalchemy import DateTime, Enum, ForeignKey, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db.database import Base
-
-
-class GoalStatusEnum(str, enum.Enum):
-    IN_PROGRESS = "in_progress"
-    COMPLETED = "completed"
-    ARCHIVED = "archived"
+from enums.goal import GoalStatusEnum
 
 
 class GoalORM(Base):
@@ -27,3 +21,4 @@ class GoalORM(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     user: Mapped["UserORM"] = relationship(back_populates="goals")
+    habits: Mapped[list["HabitORM"]] = relationship(back_populates="goal")
