@@ -20,3 +20,5 @@ class HabitORM(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     goal: Mapped["GoalORM"] = relationship(back_populates="habits")
+    progress_logs: Mapped[list["ProgressLogORM"]] = relationship(back_populates="habit")
+

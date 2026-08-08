@@ -10,6 +10,7 @@ from schemas.user import UserReadSchema
 from services.auth import AuthService
 from services.goal import GoalService
 from services.habit import HabitService
+from services.progress_log import ProgressLogService
 from services.user import UserService
 
 
@@ -42,6 +43,11 @@ def get_habit_service(uow: UOWDep) -> HabitService:
     return HabitService(uow)
 
 HabitServiceDep = Annotated[HabitService, Depends(get_habit_service)]
+
+def get_progress_log_service(uow: UOWDep) -> ProgressLogService:
+    return ProgressLogService(uow)
+
+ProgressLogServiceDep = Annotated[ProgressLogService, Depends(get_progress_log_service)]
 
 
 async def get_current_user(

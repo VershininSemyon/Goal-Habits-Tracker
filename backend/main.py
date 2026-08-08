@@ -12,6 +12,7 @@ from api.routers.auth import auth_router
 from api.routers.goal import goal_router
 from api.routers.habit import habit_router
 from api.routers.healthcheck import healthcheck_router
+from api.routers.progress_log import progress_log_router
 from api.routers.user import user_router
 from cache.redis_manager import redis_manager
 from config.settings import settings
@@ -56,6 +57,7 @@ app.include_router(user_router)
 app.include_router(auth_router)
 app.include_router(goal_router)
 app.include_router(habit_router)
+app.include_router(progress_log_router)
 
 
 Instrumentator().instrument(app).expose(app)
