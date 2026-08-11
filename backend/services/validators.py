@@ -1,16 +1,15 @@
 
+from exceptions.ai_report import AIReportNotFoundError, AIReportOwnershipError
 from exceptions.goal import GoalNotFoundError, GoalOwnershipError
 from exceptions.habit import HabitNotFoundError, HabitOwnershipError
 from exceptions.progress_log import ProgressLogNotFoundError, ProgressLogOwnershipError
+from models.ai_report import AIReportORM
 from models.goal import GoalORM
 from models.habit import HabitORM
 from models.progress_log import ProgressLogORM
-from schemas.goal import GoalReadSchema
-from schemas.habit import HabitReadSchema
-from schemas.progress_log import ProgressLogReadSchema
 
 
-def validate_goal_ownership(goal: GoalORM | GoalReadSchema | None, user_id: str):
+def validate_goal_ownership(goal: GoalORM | None, user_id: str):
     if goal is None:
         raise GoalNotFoundError()
 
@@ -19,7 +18,7 @@ def validate_goal_ownership(goal: GoalORM | GoalReadSchema | None, user_id: str)
 
 
 def validate_habit_ownership(
-    habit: HabitORM | HabitReadSchema | None,
+    habit: HabitORM | None,
     goal: GoalORM | None,
     user_id: str
 ):
@@ -33,7 +32,7 @@ def validate_habit_ownership(
 
 
 def validate_progress_log_ownership(
-    progress_log: ProgressLogORM | ProgressLogReadSchema | None,
+    progress_log: ProgressLogORM | None,
     habit: HabitORM | None,
     goal: GoalORM | None,
     user_id: str
@@ -45,3 +44,11 @@ def validate_progress_log_ownership(
 
     if progress_log.habit_id != habit.id:
         raise ProgressLogOwnershipError()
+
+
+def validate_ai_report_ownership(ai_report: AIReportORM | None, user_id: str):
+    if ai_report is None:
+        raise AIReportNotFoundError()
+
+    if ai_report.user_id != user_id:
+        raise AIReportOwnershipError()

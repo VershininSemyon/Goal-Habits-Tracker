@@ -8,6 +8,7 @@ from fastapi.responses import JSONResponse
 from prometheus_fastapi_instrumentator import Instrumentator
 
 from api.middleware import RateLimitMiddleware
+from api.routers.ai_report import ai_report_router
 from api.routers.auth import auth_router
 from api.routers.goal import goal_router
 from api.routers.habit import habit_router
@@ -58,7 +59,7 @@ app.include_router(auth_router)
 app.include_router(goal_router)
 app.include_router(habit_router)
 app.include_router(progress_log_router)
-
+app.include_router(ai_report_router)
 
 Instrumentator().instrument(app).expose(app)
 
