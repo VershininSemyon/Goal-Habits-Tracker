@@ -1,7 +1,8 @@
 
 from fastapi import APIRouter, Response, status
 
-from api.dependencies import CurrentUserDep, UserServiceDep
+from api.dependencies import AIReportServiceDep, CurrentUserDep, UserServiceDep
+from schemas.ai_report import AIReportCreateSchema, AIReportReadSchema
 from schemas.user import UserCreateSchema, UserReadSchema, UserUpdateSchema
 
 user_router = APIRouter(prefix="/users", tags=["Users"])
@@ -55,3 +56,15 @@ async def change_me(
     user_service: UserServiceDep,
 ) -> UserReadSchema:
     return await user_service.change_user(current_user, user_data)
+
+
+@user_router.get(
+    "/me/ai-reports",
+    response_model=list[AIReportReadSchema],
+    status_code=status.HTTP_200_OK
+)
+async def get_user_reports(
+    current_user: CurrentUserDep,
+    ai_report_service: AIReportServiceDep
+) -> UserReadSchema:
+    return await ai_report_service.get_user_ai_reports(current_user.id)

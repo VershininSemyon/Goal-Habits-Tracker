@@ -21,4 +21,3 @@ class HabitORM(Base):
 
     goal: Mapped["GoalORM"] = relationship(back_populates="habits")
     progress_logs: Mapped[list["ProgressLogORM"]] = relationship(back_populates="habit")
-

@@ -8,6 +8,7 @@ from models.user import UserORM
 from models.goal import GoalORM
 from models.habit import HabitORM
 from models.progress_log import ProgressLogORM
+from models.ai_report import AIReportORM
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config

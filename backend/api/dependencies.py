@@ -7,6 +7,7 @@ from cache.redis_cache_backend import RedisCacheBackend
 from db.database import async_session_factory
 from db.unitofwork import UnitOfWork
 from schemas.user import UserReadSchema
+from services.ai_report import AIReportService
 from services.auth import AuthService
 from services.goal import GoalService
 from services.habit import HabitService
@@ -48,6 +49,11 @@ def get_progress_log_service(uow: UOWDep) -> ProgressLogService:
     return ProgressLogService(uow)
 
 ProgressLogServiceDep = Annotated[ProgressLogService, Depends(get_progress_log_service)]
+
+def get_ai_report_service(uow: UOWDep) -> AIReportService:
+    return AIReportService(uow)
+
+AIReportServiceDep = Annotated[AIReportService, Depends(get_ai_report_service)]
 
 
 async def get_current_user(

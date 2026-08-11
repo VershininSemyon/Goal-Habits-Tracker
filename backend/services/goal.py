@@ -1,4 +1,5 @@
 
+from background.tasks import generate_habits_for_goal
 from db.unitofwork import UnitOfWork
 from exceptions.goal import TitleAlreadyExistsError
 from schemas.goal import GoalCreateSchema, GoalQueryParams, GoalReadSchema, GoalUpdateSchema
@@ -61,3 +62,15 @@ class GoalService:
             await self.uow.commit()
 
         return GoalReadSchema.model_validate(updated_goal)
+
+    async def fill_goal_with_habits(self, user_id: str, goal_id: str) -> None:
+        async with self.uow:
+            goal = await self.uow.goal_repository.get_by_id(goal_id)
+            validate_goal_ownership(goal, user_id)
+
+        await generate_habits_for_goal.kiq(
+            goal.id,
+            goal.title,
+            goal.description,
+            goal.deadline
+        )

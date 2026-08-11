@@ -18,3 +18,4 @@ class UserORM(Base):
     registration_date: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     goals: Mapped[list["GoalORM"]] = relationship(back_populates="user")
+    ai_reports: Mapped[list["AIReportORM"]] = relationship(back_populates="user")

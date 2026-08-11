@@ -57,6 +57,10 @@ class RateLimitSettings(BaseModel):
     RATE_LIMIT_WINDOW_SECONDS: int = 60
 
 
+class LLMSettings(BaseModel):
+    LLM_API_KEY: str
+
+
 class Settings(
     UvicornSettings,
     CorsSettings,
@@ -66,6 +70,7 @@ class Settings(
     RedisSettings,
     TaskIQSettings,
     RateLimitSettings,
+    LLMSettings,
     BaseSettings
 ):
     model_config = SettingsConfigDict(

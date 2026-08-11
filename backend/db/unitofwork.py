@@ -1,4 +1,5 @@
 
+from db.repositories.ai_report import AIReportRepository
 from db.repositories.goal import GoalRepository
 from db.repositories.habit import HabitRepository
 from db.repositories.progress_log import ProgressLogRepository
@@ -16,6 +17,7 @@ class UnitOfWork:
         self.goal_repository = GoalRepository(self.session)
         self.habit_repository = HabitRepository(self.session)
         self.progress_log_repository = ProgressLogRepository(self.session)
+        self.ai_report_repository = AIReportRepository(self.session)
 
     async def __aexit__(self, exc_type, exc, tb):
         try:

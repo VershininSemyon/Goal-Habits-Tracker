@@ -26,6 +26,10 @@ class BaseRepository(Generic[ModelType]):
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
 
+    async def insert_many(self, data: list[dict]) -> None:
+        stmt = insert(self.model).values(data)
+        await self.session.execute(stmt)
+
     async def update(self, id, data: dict) -> ModelType:
         stmt = update(self.model).where(self.model.id == id).values(**data).returning(self.model)
         result = await self.session.execute(stmt)

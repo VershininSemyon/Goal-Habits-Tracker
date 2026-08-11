@@ -72,3 +72,18 @@ async def update_goal(
     goal_service: GoalServiceDep
 ) -> GoalReadSchema:
     return await goal_service.update_goal(user.id, goal_id, data)
+
+
+@goal_router.post(
+    "/{goal_id}/ai-advice",
+    status_code=status.HTTP_202_ACCEPTED
+)
+async def gen_goal_habits(
+    goal_id: uuid.UUID,
+    user: CurrentUserDep,
+    goal_service: GoalServiceDep
+):
+    await goal_service.fill_goal_with_habits(user.id, goal_id)
+    return {
+        "status": "pending"
+    }
