@@ -25,8 +25,8 @@ def get_redis_cache_backend() -> RedisCacheBackend:
 
 RedisCacheBackendDep = Annotated[RedisCacheBackend, Depends(get_redis_cache_backend)]
 
-def get_user_service(uow: UOWDep) -> UserService:
-    return UserService(uow)
+def get_user_service(uow: UOWDep, cache: RedisCacheBackendDep) -> UserService:
+    return UserService(uow, cache)
 
 UserServiceDep = Annotated[UserService, Depends(get_user_service)]
 
@@ -45,8 +45,8 @@ def get_habit_service(uow: UOWDep) -> HabitService:
 
 HabitServiceDep = Annotated[HabitService, Depends(get_habit_service)]
 
-def get_progress_log_service(uow: UOWDep) -> ProgressLogService:
-    return ProgressLogService(uow)
+def get_progress_log_service(uow: UOWDep, cache: RedisCacheBackendDep) -> ProgressLogService:
+    return ProgressLogService(uow, cache)
 
 ProgressLogServiceDep = Annotated[ProgressLogService, Depends(get_progress_log_service)]
 

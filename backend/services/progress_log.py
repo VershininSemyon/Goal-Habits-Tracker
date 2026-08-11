@@ -1,12 +1,14 @@
 
+from cache.redis_cache_backend import RedisCacheBackend
 from db.unitofwork import UnitOfWork
 from schemas.progress_log import ProgressLogCreateSchema, ProgressLogReadSchema, ProgressLogUpdateSchema
 from services.validators import validate_habit_ownership, validate_progress_log_ownership
 
 
 class ProgressLogService:
-    def __init__(self, uow: UnitOfWork):
+    def __init__(self, uow: UnitOfWork, cache: RedisCacheBackend):
         self.uow = uow
+        self.cache = cache
 
     async def create_progress_log(self,
         user_id: str,
@@ -25,6 +27,7 @@ class ProgressLogService:
             })
             await self.uow.commit()
 
+        await self.cache.push_front(f"user:{user_id}:recent_activity", progress_log.notes)
         return ProgressLogReadSchema.model_validate(progress_log)
 
     async def get_habit_progress_logs(self,

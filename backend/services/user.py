@@ -1,4 +1,5 @@
 
+from cache.redis_cache_backend import RedisCacheBackend
 from db.unitofwork import UnitOfWork
 from exceptions.user import EmailAlreadyExistsError, UsernameAlreadyExistsError
 from integrations.hashing import hash_password
@@ -6,8 +7,9 @@ from schemas.user import UserCreateSchema, UserReadSchema, UserUpdateSchema
 
 
 class UserService:
-    def __init__(self, uow: UnitOfWork):
+    def __init__(self, uow: UnitOfWork, cache: RedisCacheBackend):
         self.uow = uow
+        self.cache = cache
 
     async def create_user(self, data: UserCreateSchema) -> UserReadSchema:
         async with self.uow:
@@ -48,3 +50,11 @@ class UserService:
             await self.uow.commit()
 
         return UserReadSchema.model_validate(updated_user)
+
+    async def get_recent_activity(
+        self,
+        user_id: str,
+        limit: int = 10,
+    ) -> list[str]:
+        recent_activity = await self.cache.get_list(f"user:{user_id}:recent_activity", 0, limit - 1)
+        return recent_activity
