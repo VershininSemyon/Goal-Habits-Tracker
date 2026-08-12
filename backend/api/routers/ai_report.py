@@ -20,6 +20,19 @@ async def get_user_reports(
     return await ai_report_service.get_user_ai_reports(current_user.id)
 
 
+@ai_report_router.post(
+    "/ai-reports",
+    response_model=AIReportReadSchema,
+    status_code=status.HTTP_202_ACCEPTED
+)
+async def create_report(
+    data: AIReportCreateSchema,
+    current_user: CurrentUserDep,
+    ai_report_service: AIReportServiceDep
+) -> AIReportReadSchema:
+    return await ai_report_service.create_ai_report(current_user.id, data)
+
+
 @ai_report_router.get(
     "/ai-reports/{report_id}",
     response_model=AIReportReadSchema,

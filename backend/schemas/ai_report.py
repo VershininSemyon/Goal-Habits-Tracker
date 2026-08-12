@@ -17,7 +17,6 @@ class AIReportReadSchema(BaseModel):
 
 class AIReportCreateSchema(BaseModel):
     week_start_date: date
-    summary_text: str
 
     @field_validator("week_start_date")
     @classmethod

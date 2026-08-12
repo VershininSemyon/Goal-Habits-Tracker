@@ -56,5 +56,5 @@ class UserService:
         user_id: str,
         limit: int = 10,
     ) -> list[str]:
-        recent_activity = await self.cache.get_list(f"user:{user_id}:recent_activity", 0, limit - 1)
-        return recent_activity
+        recent_activity = await self.cache.hash_getall(f"user:{user_id}:recent_activity")
+        return list(recent_activity.values())[:limit]

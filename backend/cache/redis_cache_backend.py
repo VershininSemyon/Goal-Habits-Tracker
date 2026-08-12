@@ -23,8 +23,11 @@ class RedisCacheBackend:
     async def ttl(self, key: str) -> int:
         return await self.client.ttl(key)
 
-    async def push_front(self, key: str, value: Any) -> None:
-        await self.client.lpush(key, value)
+    async def hash_set(self, hash_key: str, key: str, value: Any) -> None:
+        await self.client.hset(hash_key, key, value)
 
-    async def get_list(self, key: str, start: int, end: int) -> list:
-        return await self.client.lrange(key, start, end)
+    async def hash_getall(self, hash_key: str) -> dict:
+        return await self.client.hgetall(hash_key)
+
+    async def hash_delete(self, hash_key: str, key: str) -> None:
+        await self.client.hdel(hash_key, key)

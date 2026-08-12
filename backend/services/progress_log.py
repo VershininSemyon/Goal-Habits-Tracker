@@ -27,7 +27,11 @@ class ProgressLogService:
             })
             await self.uow.commit()
 
-        await self.cache.push_front(f"user:{user_id}:recent_activity", progress_log.notes)
+        await self.cache.hash_set(
+            hash_key=f"user:{user_id}:recent_activity",
+            key=str(progress_log.id),
+            value=progress_log.notes
+        )
         return ProgressLogReadSchema.model_validate(progress_log)
 
     async def get_habit_progress_logs(self,
@@ -72,6 +76,8 @@ class ProgressLogService:
             await self.uow.progress_log_repository.delete(progress_log_id)
             await self.uow.commit()
 
+        await self.cache.hash_delete(f"user:{user_id}:recent_activity", str(progress_log.id))
+
     async def update_progress_log(self,
         user_id: str,
         goal_id: str,
@@ -91,4 +97,9 @@ class ProgressLogService:
             )
             await self.uow.commit()
 
+        await self.cache.hash_set(
+            hash_key=f"user:{user_id}:recent_activity",
+            key=str(progress_log.id),
+            value=progress_log.notes
+        )
         return ProgressLogReadSchema.model_validate(updated_progress_log)
