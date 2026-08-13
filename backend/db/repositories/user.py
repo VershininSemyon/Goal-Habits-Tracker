@@ -1,5 +1,7 @@
 
-from sqlalchemy import select
+from datetime import date
+
+from sqlalchemy import Date, and_, cast, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.repositories.base import BaseRepository
@@ -23,7 +25,12 @@ class UserRepository(BaseRepository[UserORM]):
         result = await self.session.execute(stmt)
         return result.scalars().first()
 
-    async def get_users_data(self, user_id: str) -> list:
+    async def get_users_data(
+        self,
+        user_id: str,
+        start_date: date,
+        end_date: date
+    ) -> list:
         stmt = (
             select(
                 GoalORM.title,
@@ -37,9 +44,16 @@ class UserRepository(BaseRepository[UserORM]):
                 ProgressLogORM.value_achieved
             )
             .select_from(GoalORM)
-            .outerjoin(HabitORM, HabitORM.goal_id == GoalORM.id)
-            .outerjoin(ProgressLogORM, ProgressLogORM.habit_id == HabitORM.id)
+            .join(HabitORM, HabitORM.goal_id == GoalORM.id)
+            .join(ProgressLogORM, ProgressLogORM.habit_id == HabitORM.id)
+            .where(
+                and_(
+                    cast(ProgressLogORM.created_at, Date) >= start_date,
+                    cast(ProgressLogORM.created_at, Date) <= end_date
+                )
+            )
             .where(GoalORM.user_id == user_id)
+            .order_by(ProgressLogORM.created_at.desc())
         )
 
         result = await self.session.execute(stmt)

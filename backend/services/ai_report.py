@@ -1,4 +1,5 @@
 
+from background.tasks import generate_ai_report
 from db.unitofwork import UnitOfWork
 from schemas.ai_report import AIReportCreateSchema, AIReportReadSchema
 from services.validators import validate_ai_report_ownership
@@ -25,6 +26,7 @@ class AIReportService:
             ai_report = await self.uow.ai_report_repository.create(data)
             await self.uow.commit()
 
+        await generate_ai_report.kiq(user_id, ai_report.id, ai_report.start_date, ai_report.end_date)
         return AIReportReadSchema.model_validate(ai_report)
 
     async def get_ai_report_by_id(self, report_id: str, user_id: str) -> AIReportReadSchema:

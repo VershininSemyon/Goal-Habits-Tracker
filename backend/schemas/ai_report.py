@@ -2,13 +2,14 @@
 import uuid
 from datetime import date, datetime
 
-from pydantic import BaseModel, ConfigDict, field_validator
+from pydantic import BaseModel, ConfigDict, model_validator
 
 
 class AIReportReadSchema(BaseModel):
     id: uuid.UUID
     user_id: uuid.UUID
-    week_start_date: date
+    start_date: date
+    end_date: date
     summary_text: str
     created_at: datetime
 
@@ -16,11 +17,17 @@ class AIReportReadSchema(BaseModel):
 
 
 class AIReportCreateSchema(BaseModel):
-    week_start_date: date
+    start_date: date
+    end_date: date
 
-    @field_validator("week_start_date")
-    @classmethod
-    def validate_week_start_date(cls, value: date) -> date:
-        if value > date.today():
-            raise ValueError("Дата начала недели не может быть в будущем")
-        return value
+    @model_validator(mode="after")
+    def validate_dates(self):
+        current_date = date.today()
+
+        if self.end_date > current_date:
+            raise ValueError("Дата конца не может быть в будущем")
+
+        if self.start_date > self.end_date:
+            raise ValueError("Дата конца не может быть раньше даты начала")
+
+        return self
