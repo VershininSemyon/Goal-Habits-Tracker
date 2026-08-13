@@ -13,7 +13,7 @@ class HabitORM(Base):
     __tablename__ = 'habits'
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
-    goal_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("goals.id", ondelete="CASCADE"), nullable=False)
+    goal_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("goals.id", ondelete="CASCADE"), nullable=False, index=True)
     title: Mapped[str] = mapped_column(Text, nullable=False)
     frequency: Mapped[str] = mapped_column(Enum(HabitFrequencyEnum), nullable=False)
     target_time: Mapped[str] = mapped_column(Text, nullable=False)

@@ -12,9 +12,9 @@ class ProgressLogORM(Base):
     __tablename__ = 'progress_logs'
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
-    habit_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("habits.id", ondelete="CASCADE"), nullable=False)
+    habit_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("habits.id", ondelete="CASCADE"), nullable=False, index=True)
     notes: Mapped[str] = mapped_column(Text, nullable=True)
     value_achieved: Mapped[int] = mapped_column(Integer, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), index=True)
 
     habit: Mapped["HabitORM"] = relationship(back_populates="progress_logs")
