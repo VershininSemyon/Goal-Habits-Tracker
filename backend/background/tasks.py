@@ -58,7 +58,8 @@ async def generate_ai_report(
         report_text = await llm_client.send_request_to_llm(prompt)
         logging.info(f"Ответ: {report_text}")
         summary_text = report_text
-    except:
+    except Exception as e:
+        logging.error(f"Ошибка при генерации отчета: {e}")
         summary_text = "Произошла ошибка"
 
     async with uow:
