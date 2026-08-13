@@ -1,6 +1,4 @@
 
-import json
-
 from cache.redis_cache_backend import RedisCacheBackend
 from db.unitofwork import UnitOfWork
 from exceptions.user import EmailAlreadyExistsError, UsernameAlreadyExistsError

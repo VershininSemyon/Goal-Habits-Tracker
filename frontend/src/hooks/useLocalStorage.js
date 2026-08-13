@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from "react";
 
 export function useLocalStorage(key, initialValue) {
     const [storedValue, setStoredValue] = useState(() => {
@@ -12,11 +12,15 @@ export function useLocalStorage(key, initialValue) {
 
     const setValue = (value) => {
         try {
-            const valueToStore = value instanceof Function ? value(storedValue) : value;
+            const valueToStore =
+                value instanceof Function ? value(storedValue) : value;
             setStoredValue(valueToStore);
-            if (valueToStore === null || valueToStore === undefined) window.localStorage.removeItem(key);
+            if (valueToStore === null || valueToStore === undefined)
+                window.localStorage.removeItem(key);
             else window.localStorage.setItem(key, JSON.stringify(valueToStore));
-        } catch (error) { console.error(`Error setting localStorage key "${key}":`, error); }
+        } catch (error) {
+            console.error(`Error setting localStorage key "${key}":`, error);
+        }
     };
 
     const removeValue = () => {

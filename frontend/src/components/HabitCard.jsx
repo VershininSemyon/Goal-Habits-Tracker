@@ -1,5 +1,44 @@
-import Button from './ui/Button.jsx';
-const freq = { daily: 'Каждый день', weekly: 'Каждую неделю' };
+import Button from "./ui/Button.jsx";
+const freq = { daily: "Каждый день", weekly: "Каждую неделю" };
 export default function HabitCard({ habit, onEdit, onDelete, onProgress }) {
-    return <article className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><div className="flex items-start justify-between gap-3"><div><h4 className="font-bold text-slate-900">{habit.title}</h4><div className="mt-1 flex flex-wrap gap-2 text-xs text-slate-500"><span className="rounded-full bg-indigo-50 px-2 py-1 text-indigo-700">{freq[habit.frequency] || habit.frequency}</span><span className="rounded-full bg-slate-100 px-2 py-1">Цель на {habit.target_time}</span></div></div><div className="flex gap-1"><Button variant="ghost" className="px-2 py-1.5 text-xs" onClick={() => onEdit(habit)}>Изменить</Button><Button variant="danger" className="px-2 py-1.5 text-xs" onClick={() => onDelete(habit.id)}>Удалить</Button></div></div><Button variant="success" className="mt-4 w-full" onClick={() => onProgress(habit)}>+ Записать прогресс</Button></article>;
+    return (
+        <article className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div className="flex items-start justify-between gap-3">
+                <div>
+                    <h4 className="font-bold text-slate-900">{habit.title}</h4>
+                    <div className="mt-1 flex flex-wrap gap-2 text-xs text-slate-500">
+                        <span className="rounded-full bg-indigo-50 px-2 py-1 text-indigo-700">
+                            {freq[habit.frequency] || habit.frequency}
+                        </span>
+                        <span className="rounded-full bg-slate-100 px-2 py-1">
+                            Цель на {habit.target_time}
+                        </span>
+                    </div>
+                </div>
+                <div className="flex gap-1">
+                    <Button
+                        variant="ghost"
+                        className="px-2 py-1.5 text-xs"
+                        onClick={() => onEdit(habit)}
+                    >
+                        Изменить
+                    </Button>
+                    <Button
+                        variant="danger"
+                        className="px-2 py-1.5 text-xs"
+                        onClick={() => onDelete(habit.id)}
+                    >
+                        Удалить
+                    </Button>
+                </div>
+            </div>
+            <Button
+                variant="success"
+                className="mt-4 w-full"
+                onClick={() => onProgress(habit)}
+            >
+                + Записать прогресс
+            </Button>
+        </article>
+    );
 }

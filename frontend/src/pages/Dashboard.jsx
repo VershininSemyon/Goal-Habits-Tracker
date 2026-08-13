@@ -1,19 +1,18 @@
-
-import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 
 import {
     getDashboardStats,
     getRecentActivity,
-} from '../services/userService.js';
+} from "../services/userService.js";
 
-import { healthcheck } from '../services/healthService.js';
-import { deleteGoal, getGoals } from '../services/goalService.js';
+import { healthcheck } from "../services/healthService.js";
+import { deleteGoal, getGoals } from "../services/goalService.js";
 
-import Button from '../components/ui/Button.jsx';
-import Spinner from '../components/ui/Spinner.jsx';
-import GoalCard from '../components/GoalCard.jsx';
-import EmptyState from '../components/ui/EmptyState.jsx';
+import Button from "../components/ui/Button.jsx";
+import Spinner from "../components/ui/Spinner.jsx";
+import GoalCard from "../components/GoalCard.jsx";
+import EmptyState from "../components/ui/EmptyState.jsx";
 
 export default function Dashboard() {
     const [stats, setStats] = useState(null);
@@ -33,8 +32,8 @@ export default function Dashboard() {
                     getGoals({
                         limit: 4,
                         offset: 0,
-                        order_by: 'deadline',
-                        order: 'asc',
+                        order_by: "deadline",
+                        order: "asc",
                     }),
                     healthcheck(),
                 ]);
@@ -54,12 +53,12 @@ export default function Dashboard() {
 
     const bestHabitsByValue = useMemo(
         () => (stats?.best_habits_by_value || []).slice(0, 5),
-        [stats]
+        [stats],
     );
 
     const bestHabitsByCount = useMemo(
         () => (stats?.best_habits_by_count || []).slice(0, 5),
-        [stats]
+        [stats],
     );
 
     if (loading) {
@@ -93,21 +92,17 @@ export default function Dashboard() {
                 <div className="flex items-center gap-2 text-xs font-semibold text-slate-400">
                     <span
                         className={`h-2 w-2 rounded-full ${
-                            serverHealthy
-                                ? 'bg-emerald-500'
-                                : 'bg-rose-500'
+                            serverHealthy ? "bg-emerald-500" : "bg-rose-500"
                         }`}
                     />
-
-                    API {serverHealthy ? 'работает' : 'недоступен'}
+                    API {serverHealthy ? "работает" : "недоступен"}
                 </div>
 
                 <div className="flex items-center gap-2 text-xs text-slate-400">
                     <span className="text-sm">↻</span>
 
                     <span>
-                        Статистика обновляется каждые 12 часов с момента
-                        запроса
+                        Статистика обновляется каждые 12 часов с момента запроса
                     </span>
                 </div>
             </div>
@@ -152,9 +147,7 @@ export default function Dashboard() {
                 <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
                     <div className="mb-5 flex items-center justify-between">
                         <div>
-                            <h2 className="font-black">
-                                Ближайшие цели
-                            </h2>
+                            <h2 className="font-black">Ближайшие цели</h2>
 
                             <p className="text-xs text-slate-400">
                                 Сортировка по дедлайну
@@ -176,11 +169,7 @@ export default function Dashboard() {
                                     key={goal.id}
                                     goal={goal}
                                     onDelete={async (goalId) => {
-                                        if (
-                                            !window.confirm(
-                                                'Удалить цель?'
-                                            )
-                                        ) {
+                                        if (!window.confirm("Удалить цель?")) {
                                             return;
                                         }
 
@@ -205,9 +194,7 @@ export default function Dashboard() {
 
                 <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
                     <div>
-                        <h2 className="font-black">
-                            Последняя активность
-                        </h2>
+                        <h2 className="font-black">Последняя активность</h2>
 
                         <p className="mt-1 text-xs text-slate-400">
                             Последние записи прогресса
@@ -225,7 +212,7 @@ export default function Dashboard() {
                                         {index + 1}
                                     </span>
 
-                                    {item || 'Запись без заметки'}
+                                    {item || "Запись без заметки"}
                                 </div>
                             ))
                         ) : (
@@ -336,7 +323,7 @@ function formatPercent(value) {
     const numericValue = Number(value ?? 0);
 
     if (!Number.isFinite(numericValue)) {
-        return '0';
+        return "0";
     }
 
     return Number.isInteger(numericValue)
@@ -348,8 +335,8 @@ function formatNumber(value) {
     const numericValue = Number(value ?? 0);
 
     if (!Number.isFinite(numericValue)) {
-        return '0';
+        return "0";
     }
 
-    return new Intl.NumberFormat('ru-RU').format(numericValue);
+    return new Intl.NumberFormat("ru-RU").format(numericValue);
 }
