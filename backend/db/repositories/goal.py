@@ -63,10 +63,11 @@ class GoalRepository(BaseRepository[GoalORM]):
                 func.count(case(
                     (GoalORM.status == GoalStatusEnum.COMPLETED, 1),
                     else_=None
-                )) / func.count() * 100
+                )) / func.nullif(func.count(), 0) * 100
             )
             .where(GoalORM.user_id == user_id)
         )
 
         result = await self.session.execute(stmt)
-        return round(float(result.scalars().first()), 2)
+        value = result.scalar_one_or_none()
+        return round(float(value), 2) if value is not None else 0.0
