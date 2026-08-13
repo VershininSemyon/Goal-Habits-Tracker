@@ -1,4 +1,6 @@
 
+import json
+
 from cache.redis_cache_backend import RedisCacheBackend
 from db.unitofwork import UnitOfWork
 from exceptions.user import EmailAlreadyExistsError, UsernameAlreadyExistsError
@@ -56,13 +58,20 @@ class UserService:
         user_id: str,
         limit: int = 10,
     ) -> list[str]:
-        recent_activity = await self.cache.hash_getall(f"user:{user_id}:recent_activity")
+        recent_activity = await self.cache.hash_getall(f"users:{user_id}:recent_activity")
         return list(recent_activity.values())[:limit]
 
     async def get_user_stats(
         self,
         user_id: str
     ) -> UserStatsSchema:
+        cache_key = f"users:{user_id}:stats"
+        cache_ttl = 3600 * 12 # Полдня
+
+        cached = await self.cache.get_value(cache_key)
+        if cached is not None:
+            return UserStatsSchema.model_validate_json(cached)
+
         async with self.uow:
             percent = await self.uow.goal_repository.get_goals_completed_percent(user_id)
             max_streak = await self.uow.progress_log_repository.get_max_user_streak(user_id)
@@ -79,9 +88,11 @@ class UserService:
                 for elem in habits_by_count
             ]
 
-        return UserStatsSchema(
+        result = UserStatsSchema(
             goals_completed_percent=percent,
             max_streak=max_streak,
             best_habits_by_value=habits_by_value,
             best_habits_by_count=habits_by_count
         )
+        await self.cache.set_value(cache_key, result.model_dump_json(), cache_ttl)
+        return result
