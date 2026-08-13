@@ -59,7 +59,7 @@ class UserService:
         limit: int = 10,
     ) -> list[str]:
         recent_activity = await self.cache.hash_getall(f"users:{user_id}:recent_activity")
-        return list(recent_activity.values())[:limit]
+        return list(recent_activity.values())[::-1][:limit]
 
     async def get_user_stats(
         self,
