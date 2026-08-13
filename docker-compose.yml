@@ -15,6 +15,16 @@ services:
       - "8000:8000"
     depends_on:
       - postgres
+  
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "5000:80"
+    depends_on:
+      - backend
+    networks:
+      - app_net
 
   nginx:
     image: nginx:1.27-alpine

@@ -1,0 +1,237 @@
+import { useEffect, useState } from "react";
+import { getGoals, createGoal, deleteGoal } from "../services/goalService.js";
+import GoalCard from "../components/GoalCard.jsx";
+import Input from "../components/ui/Input.jsx";
+import Button from "../components/ui/Button.jsx";
+import Modal from "../components/ui/Modal.jsx";
+import EmptyState from "../components/ui/EmptyState.jsx";
+import Spinner from "../components/ui/Spinner.jsx";
+
+const blank = {
+    title: "",
+    description: "",
+    deadline: "",
+    status: "in_progress",
+};
+export default function Goals() {
+    const [goals, setGoals] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [filters, setFilters] = useState({
+        text_query: "",
+        status_type: "",
+        order_by: "created_at",
+        order: "desc",
+        limit: 100,
+        offset: 0,
+    });
+    const [open, setOpen] = useState(false);
+    const [form, setForm] = useState(blank);
+    const [saving, setSaving] = useState(false);
+    const load = async () => {
+        setLoading(true);
+        try {
+            setGoals(
+                await getGoals({
+                    ...filters,
+                    status_type: filters.status_type || undefined,
+                    text_query: filters.text_query || undefined,
+                }),
+            );
+        } finally {
+            setLoading(false);
+        }
+    };
+    useEffect(() => {
+        load();
+    }, [
+        filters.text_query,
+        filters.status_type,
+        filters.order_by,
+        filters.order,
+    ]);
+    const submit = async (e) => {
+        e.preventDefault();
+        setSaving(true);
+        try {
+            await createGoal({
+                ...form,
+                description: form.description || null,
+                deadline: new Date(form.deadline).toISOString(),
+            });
+            setOpen(false);
+            setForm(blank);
+            await load();
+        } finally {
+            setSaving(false);
+        }
+    };
+    const remove = async (id) => {
+        if (!window.confirm("Удалить цель и связанные данные?")) return;
+        await deleteGoal(id);
+        await load();
+    };
+    return (
+        <div className="space-y-6">
+            <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+                <div>
+                    <p className="text-sm font-bold uppercase tracking-widest text-indigo-600">
+                        Рабочее пространство
+                    </p>
+                    <h1 className="mt-1 text-3xl font-black">Мои цели</h1>
+                    <p className="mt-2 text-sm text-slate-500">
+                        Фильтруйте, сортируйте и открывайте цели для работы с
+                        привычками.
+                    </p>
+                </div>
+                <Button onClick={() => setOpen(true)}>+ Создать цель</Button>
+            </div>
+            <div className="grid gap-3 rounded-3xl border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-4">
+                <Input
+                    placeholder="Поиск по названию или описанию"
+                    value={filters.text_query}
+                    onChange={(e) =>
+                        setFilters({ ...filters, text_query: e.target.value })
+                    }
+                />
+                <Select
+                    label="Статус"
+                    value={filters.status_type}
+                    onChange={(e) =>
+                        setFilters({ ...filters, status_type: e.target.value })
+                    }
+                    options={[
+                        ["", "Все статусы"],
+                        ["in_progress", "В процессе"],
+                        ["completed", "Завершены"],
+                        ["archived", "Архив"],
+                    ]}
+                />
+                <Select
+                    label="Сортировать"
+                    value={filters.order_by}
+                    onChange={(e) =>
+                        setFilters({ ...filters, order_by: e.target.value })
+                    }
+                    options={[
+                        ["created_at", "Дата создания"],
+                        ["deadline", "Дедлайн"],
+                    ]}
+                />
+                <Select
+                    label="Порядок"
+                    value={filters.order}
+                    onChange={(e) =>
+                        setFilters({ ...filters, order: e.target.value })
+                    }
+                    options={[
+                        ["desc", "Сначала новые"],
+                        ["asc", "Сначала старые"],
+                    ]}
+                />
+            </div>
+            {loading ? (
+                <Spinner />
+            ) : goals.length ? (
+                <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+                    {goals.map((goal) => (
+                        <GoalCard key={goal.id} goal={goal} onDelete={remove} />
+                    ))}
+                </div>
+            ) : (
+                <EmptyState
+                    icon="🎯"
+                    title="Целей пока нет"
+                    description="Создайте цель, а затем добавьте к ней привычки и отслеживайте прогресс."
+                    action={
+                        <Button onClick={() => setOpen(true)}>
+                            Создать первую цель
+                        </Button>
+                    }
+                />
+            )}
+            <Modal
+                open={open}
+                onClose={() => setOpen(false)}
+                title="Новая цель"
+            >
+                <form onSubmit={submit} className="space-y-4">
+                    <Input
+                        label="Название"
+                        value={form.title}
+                        onChange={(e) =>
+                            setForm({ ...form, title: e.target.value })
+                        }
+                        required
+                    />
+                    <div>
+                        <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+                            Описание
+                        </label>
+                        <textarea
+                            className="min-h-28 w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
+                            value={form.description}
+                            onChange={(e) =>
+                                setForm({
+                                    ...form,
+                                    description: e.target.value,
+                                })
+                            }
+                        />
+                    </div>
+                    <Input
+                        label="Дедлайн"
+                        type="datetime-local"
+                        value={form.deadline}
+                        onChange={(e) =>
+                            setForm({ ...form, deadline: e.target.value })
+                        }
+                        required
+                    />
+                    <Select
+                        label="Статус"
+                        value={form.status}
+                        onChange={(e) =>
+                            setForm({ ...form, status: e.target.value })
+                        }
+                        options={[
+                            ["in_progress", "В процессе"],
+                            ["completed", "Завершена"],
+                            ["archived", "Архив"],
+                        ]}
+                    />
+                    <div className="flex justify-end gap-3">
+                        <Button
+                            variant="secondary"
+                            type="button"
+                            onClick={() => setOpen(false)}
+                        >
+                            Отмена
+                        </Button>
+                        <Button type="submit" loading={saving}>
+                            Создать
+                        </Button>
+                    </div>
+                </form>
+            </Modal>
+        </div>
+    );
+}
+function Select({ label, options, ...props }) {
+    return (
+        <div className="space-y-1.5">
+            <label className="block text-sm font-semibold text-slate-700">
+                {label}
+            </label>
+            <select
+                className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
+                {...props}
+            >
+                {options.map(([value, text]) => (
+                    <option key={value} value={value}>
+                        {text}
+                    </option>
+                ))}
+            </select>
+        </div>
+    );
+}
