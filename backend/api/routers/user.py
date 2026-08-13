@@ -4,7 +4,7 @@ from typing import Annotated
 from fastapi import APIRouter, Query, Response, status
 
 from api.dependencies import CurrentUserDep, UserServiceDep
-from schemas.user import UserCreateSchema, UserReadSchema, UserUpdateSchema
+from schemas.user import UserCreateSchema, UserReadSchema, UserStatsSchema, UserUpdateSchema
 
 user_router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -70,3 +70,15 @@ async def get_recent_activity(
     limit: Annotated[int, Query(gt=0)] = 10,
 ) -> list[str]:
     return await user_service.get_recent_activity(current_user.id, limit)
+
+
+@user_router.get(
+    "/me/dashboard/stats",
+    response_model=UserStatsSchema,
+    status_code=status.HTTP_200_OK
+)
+async def get_stats(
+    current_user: CurrentUserDep,
+    user_service: UserServiceDep,
+) -> UserStatsSchema:
+    return await user_service.get_user_stats(current_user.id)

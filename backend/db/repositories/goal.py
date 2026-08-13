@@ -1,5 +1,5 @@
 
-from sqlalchemy import asc, desc, or_, select
+from sqlalchemy import asc, case, desc, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.repositories.base import BaseRepository
@@ -56,3 +56,17 @@ class GoalRepository(BaseRepository[GoalORM]):
         stmt = select(GoalORM).where(GoalORM.title == title)
         result = await self.session.execute(stmt)
         return result.scalars().first()
+
+    async def get_goals_completed_percent(self, user_id: str) -> float:
+        stmt = (
+            select(
+                func.count(case(
+                    (GoalORM.status == GoalStatusEnum.COMPLETED, 1),
+                    else_=None
+                )) / func.count() * 100
+            )
+            .where(GoalORM.user_id == user_id)
+        )
+
+        result = await self.session.execute(stmt)
+        return round(float(result.scalars().first()), 2)

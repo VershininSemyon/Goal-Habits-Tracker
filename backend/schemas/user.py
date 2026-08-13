@@ -33,3 +33,15 @@ class UserCreateSchema(BaseModel):
 class UserUpdateSchema(BaseModel):
     username: UserUsername
     email: EmailStr
+
+
+class UserStatsSchema(BaseModel):
+    class HabitListItem(BaseModel):
+        goal_title: str
+        habit_title: str
+        value: int
+
+    goals_completed_percent: float
+    max_streak: int
+    best_habits_by_value: list[HabitListItem]
+    best_habits_by_count: list[HabitListItem]

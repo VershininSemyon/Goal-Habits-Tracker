@@ -3,7 +3,7 @@ from cache.redis_cache_backend import RedisCacheBackend
 from db.unitofwork import UnitOfWork
 from exceptions.user import EmailAlreadyExistsError, UsernameAlreadyExistsError
 from integrations.hashing import hash_password
-from schemas.user import UserCreateSchema, UserReadSchema, UserUpdateSchema
+from schemas.user import UserCreateSchema, UserReadSchema, UserStatsSchema, UserUpdateSchema
 
 
 class UserService:
@@ -58,3 +58,30 @@ class UserService:
     ) -> list[str]:
         recent_activity = await self.cache.hash_getall(f"user:{user_id}:recent_activity")
         return list(recent_activity.values())[:limit]
+
+    async def get_user_stats(
+        self,
+        user_id: str
+    ) -> UserStatsSchema:
+        async with self.uow:
+            percent = await self.uow.goal_repository.get_goals_completed_percent(user_id)
+            max_streak = await self.uow.progress_log_repository.get_max_user_streak(user_id)
+
+            habits_by_value = await self.uow.habit_repository.sort_habits_by_value(user_id)
+            habits_by_value = [
+                UserStatsSchema.HabitListItem(goal_title=elem[0], habit_title=elem[1], value=elem[2])
+                for elem in habits_by_value
+            ]
+
+            habits_by_count = await self.uow.habit_repository.sort_habits_by_logs_count(user_id)
+            habits_by_count = [
+                UserStatsSchema.HabitListItem(goal_title=elem[0], habit_title=elem[1], value=elem[2])
+                for elem in habits_by_count
+            ]
+
+        return UserStatsSchema(
+            goals_completed_percent=percent,
+            max_streak=max_streak,
+            best_habits_by_value=habits_by_value,
+            best_habits_by_count=habits_by_count
+        )
