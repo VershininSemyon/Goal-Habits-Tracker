@@ -30,7 +30,8 @@ class LlmApiClient:
         self,
         goal_title: str,
         goal_description: str | None,
-        goal_deadline: str
+        goal_deadline: str,
+        habits: str
     ) -> str:
         prompt = f"""Ты — эксперт по продуктивности и формированию привычек.
             Твоя задача: разбить следующую цель пользователя на 3-5 конкретных, измеримых и выполнимых привычек.
@@ -39,6 +40,7 @@ class LlmApiClient:
             Название: {goal_title}
             Описание: {goal_description or 'Нет описания'}
             Дедлайн: {goal_deadline}
+            Текущие привычки: {habits or 'Нет привычек'}
 
             [ПРАВИЛА ФОРМИРОВАНИЯ ПРИВЫЧЕК]
             1. Название привычки должно быть коротким, начинаться с глагола и

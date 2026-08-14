@@ -1,4 +1,6 @@
 
+import json
+
 from background.tasks import generate_habits_for_goal
 from db.unitofwork import UnitOfWork
 from exceptions.goal import TitleAlreadyExistsError
@@ -68,9 +70,21 @@ class GoalService:
             goal = await self.uow.goal_repository.get_by_id(goal_id)
             validate_goal_ownership(goal, user_id)
 
+            habits = await self.uow.habit_repository.get_goal_habits(goal_id)
+            habits = [
+                {
+                    'title': habit.title,
+                    'frequency': habit.frequency,
+                    'target_time': habit.target_time
+                }
+                for habit in habits
+            ]
+            habits = json.dumps(habits)
+
         await generate_habits_for_goal.kiq(
             goal.id,
             goal.title,
             goal.description,
-            goal.deadline
+            goal.deadline,
+            habits
         )
