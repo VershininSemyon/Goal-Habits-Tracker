@@ -14,12 +14,14 @@ async def generate_habits_for_goal(
     goal_id: str,
     goal_title: str,
     goal_description: str | None,
-    goal_deadline: str
+    goal_deadline: str,
+    habits: str
 ):
     prompt = llm_client.get_habits_generation_prompt(
         goal_title,
         goal_description,
-        goal_deadline
+        goal_deadline,
+        habits
     )
     response = await llm_client.send_request_to_llm(prompt)
 
