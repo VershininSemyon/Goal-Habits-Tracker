@@ -2,7 +2,7 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import DateTime, Enum, ForeignKey, Text, func
+from sqlalchemy import DateTime, Enum, ForeignKey, Text, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db.database import Base
@@ -11,6 +11,9 @@ from enums.habit import HabitFrequencyEnum
 
 class HabitORM(Base):
     __tablename__ = 'habits'
+    __table_args__ = (
+        UniqueConstraint('goal_id', 'title', name='unique_goal_id_habit_title'),
+    )
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     goal_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("goals.id", ondelete="CASCADE"), nullable=False, index=True)

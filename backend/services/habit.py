@@ -65,5 +65,7 @@ class HabitService:
             if habit_by_title is not None and habit_by_title.title != habit.title:
                 raise TitleAlreadyExistsError()
 
-            await self.uow.habit_repository.update(habit_id, data.model_dump())
+            updated_habit = await self.uow.habit_repository.update(habit_id, data.model_dump())
             await self.uow.commit()
+
+        return HabitReadSchema.model_validate(updated_habit)

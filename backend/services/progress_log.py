@@ -99,7 +99,7 @@ class ProgressLogService:
 
         await self.cache.hash_set(
             hash_key=f"users:{user_id}:recent_activity",
-            key=str(progress_log.id),
-            value=progress_log.notes
+            key=str(updated_progress_log.id),
+            value=updated_progress_log.notes
         )
         return ProgressLogReadSchema.model_validate(updated_progress_log)
